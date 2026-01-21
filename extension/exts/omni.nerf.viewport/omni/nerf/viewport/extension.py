@@ -26,8 +26,8 @@ class OmniNerfViewportExtension(omni.ext.IExt):
 
     def __init__(self):
         super().__init__()
-        self.is_python_supported: bool = platform.python_version().startswith("3.10")
-        """The Python version must match the backend version for RPyC to work."""
+        self.is_python_supported: bool = platform.python_version().startswith("3.10") or platform.python_version().startswith("3.11")
+        """The Python version must be compatible with the backend for RPyC to work."""
         self.camera_position: Gf.Vec3d = None
         self.camera_rotation: Gf.Vec3d = None
         # Initialize worker thread and event
@@ -72,7 +72,8 @@ class OmniNerfViewportExtension(omni.ext.IExt):
         self.worker_thread.start()
 
     def init_rpyc(self):
-        # TODO: Make the following configurable
+        # TODO: Make the following configurable via UI or config file
+        # For remote rendering, change host to the remote machine's IP (e.g., Tailscale IP)
         host = 'localhost'
         port = 10001
         model_config_path = '/workspace/outputs/poster/nerfacto/DATE_TIME/config.yml'

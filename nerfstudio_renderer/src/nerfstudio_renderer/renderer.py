@@ -168,10 +168,12 @@ class NerfStudioRenderer():
                 # rather than an attribute of the model named "module"
                 if not key.startswith("_model.module."):
                     is_ddp_model_state = False
-        # Drop the embedding layer for appearance embedding that requires the number of training images,
-        # since we are not using average appearance embedding.
+        # Drop training-specific parameters that have size mismatches at inference time:
+        # - embedding_appearance: requires number of training images
+        # - camera_optimizer: per-image pose adjustments from training
         # Ref: https://github.com/nerfstudio-project/nerfstudio/blob/c87ebe34ba8b11172971ce48e44b6a8e8eb7a6fc/nerfstudio/fields/nerfacto_field.py#L112
-        model_state = { key: value for key, value in model_state.items() if 'embedding_appearance' not in key }
+        model_state = { key: value for key, value in model_state.items()
+                       if 'embedding_appearance' not in key and 'camera_optimizer' not in key }
         # Ref: https://github.com/nerfstudio-project/nerfstudio/blob/c87ebe34ba8b11172971ce48e44b6a8e8eb7a6fc/nerfstudio/pipelines/base_pipeline.py#L120-L122
         # remove "module." prefix added by DDP
         if is_ddp_model_state:

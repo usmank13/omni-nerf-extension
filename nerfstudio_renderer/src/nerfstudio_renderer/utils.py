@@ -1,8 +1,21 @@
+import math
 import numpy as np
 import torch
 from nerfstudio.cameras.cameras import Cameras, CameraType
-from nerfstudio.viewer.server.utils import three_js_perspective_camera_focal_length
 from scipy.spatial.transform import Rotation as R
+
+
+def three_js_perspective_camera_focal_length(fov: float, image_height: int) -> float:
+    """Compute focal length from vertical FOV and image height.
+
+    Args:
+        fov: Vertical field of view in degrees.
+        image_height: Image height in pixels.
+
+    Returns:
+        Focal length in pixels.
+    """
+    return image_height / (2.0 * math.tan(math.radians(fov) / 2.0))
 
 
 def camera_to_world_matrix(position, rotation):
